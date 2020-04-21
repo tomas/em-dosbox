@@ -82,8 +82,10 @@ public:
 		for (int d = 0;d < DOS_DRIVES;d++) {
 			if (!Drives[d]) continue;
 
-			char root[7] = {'A'+d,':','\\','*','.','*',0};
-			bool ret = DOS_FindFirst(root,DOS_ATTR_VOLUME);
+			char root[7] = {0,':','\\','*','.','*',0};
+			root[0] = 'A'+d;
+
+			bool ret = DOS_FindFirst(root,DOS_ATTR_VOLUME,false);
 			if (ret) {
 				dta.GetResult(name,size,date,time,attr);
 				DOS_FindNext(); //Mark entry as invalid
@@ -1350,7 +1352,7 @@ public:
 					DriveManager::CycleAllDisks();
 
 					char root[7] = {drive,':','\\','*','.','*',0};
-					DOS_FindFirst(root, DOS_ATTR_VOLUME); // force obtaining the label and saving it in dirCache
+					DOS_FindFirst(root, DOS_ATTR_VOLUME, false); // force obtaining the label and saving it in dirCache
 				}
 				dos.dta(save_dta);
 

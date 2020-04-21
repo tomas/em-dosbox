@@ -815,8 +815,8 @@ static Bitu DOS_21Handler(void) {
 		break;
 	case 0x4e:					/* FINDFIRST Find first matching file */
 		MEM_StrCopy(SegPhys(ds)+reg_dx,name1,DOSNAMEBUF);
-		if (DOS_FindFirst(name1,reg_cx)) {
-			CALLBACK_SCF(false);	
+		if (DOS_FindFirst(name1,reg_cx,false)) {
+			CALLBACK_SCF(false);
 			reg_ax=0;			/* Undocumented */
 		} else {
 			reg_ax=dos.errorcode;

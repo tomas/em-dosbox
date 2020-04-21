@@ -193,8 +193,8 @@ void DOS_Shell::CMD_DELETE(char * args) {
 	args = ExpandDot(args,buffer);
 	StripSpaces(args);
 	if (!DOS_Canonicalize(args,full)) { WriteOut(MSG_Get("SHELL_ILLEGAL_PATH"));return; }
-//TODO Maybe support confirmation for *.* like dos does.	
-	bool res=DOS_FindFirst(args,0xffff & ~DOS_ATTR_VOLUME);
+//TODO Maybe support confirmation for *.* like dos does.
+	bool res=DOS_FindFirst(args,0xffff & ~DOS_ATTR_VOLUME,false);
 	if (!res) {
 		WriteOut(MSG_Get("SHELL_CMD_DEL_ERROR"),args);
 		dos.dta(save_dta);
@@ -481,7 +481,7 @@ void DOS_Shell::CMD_DIR(char * args) {
 	RealPt save_dta=dos.dta();
 	dos.dta(dos.tables.tempdta);
 	DOS_DTA dta(dos.dta());
-	bool ret=DOS_FindFirst(args,0xffff & ~DOS_ATTR_VOLUME);
+	bool ret=DOS_FindFirst(args,0xffff & ~DOS_ATTR_VOLUME,false);
 	if (!ret) {
 		if (!optB) WriteOut(MSG_Get("SHELL_CMD_FILE_NOT_FOUND"),args);
 		dos.dta(save_dta);
@@ -622,7 +622,7 @@ void DOS_Shell::CMD_COPY(char * args) {
 				if (source_x[source_x_len-1]==':') has_drive_spec = true;
 			}
 			if (!has_drive_spec  && !strpbrk(source_p,"*?") ) { //doubt that fu*\*.* is valid
-				if (DOS_FindFirst(source_p,0xffff & ~DOS_ATTR_VOLUME)) {
+				if (DOS_FindFirst(source_p,0xffff & ~DOS_ATTR_VOLUME,false)) {
 					dta.GetResult(name,size,date,time,attr);
 					if (attr & DOS_ATTR_DIRECTORY)
 						strcat(source_x,"\\*.*");
@@ -698,7 +698,7 @@ void DOS_Shell::CMD_COPY(char * args) {
 		} else target_is_file = false;
 
 		//Find first sourcefile
-		bool ret = DOS_FindFirst(const_cast<char*>(source.filename.c_str()),0xffff & ~DOS_ATTR_VOLUME);
+		bool ret = DOS_FindFirst(const_cast<char*>(source.filename.c_str()),0xffff & ~DOS_ATTR_VOLUME,false);
 		if (!ret) {
 			WriteOut(MSG_Get("SHELL_CMD_FILE_NOT_FOUND"),const_cast<char*>(source.filename.c_str()));
 			dos.dta(save_dta);
@@ -862,7 +862,7 @@ void DOS_Shell::CMD_IF(char * args) {
 		{	/* DOS_FindFirst uses dta so set it to our internal dta */
 			RealPt save_dta=dos.dta();
 			dos.dta(dos.tables.tempdta);
-			bool ret=DOS_FindFirst(word,0xffff & ~DOS_ATTR_VOLUME);
+			bool ret=DOS_FindFirst(word,0xffff & ~DOS_ATTR_VOLUME,false);
 			dos.dta(save_dta);
 			if (ret==(!has_not)) DoCommand(args);
 		}
