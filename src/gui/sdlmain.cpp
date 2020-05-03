@@ -2027,7 +2027,7 @@ static void GUI_StartUp(Section * sec) {
  * The splash screen requires emterpreter sync.
  * Creating a 2D context prevents subsequent creation of a 3D context.
  */
-#if !defined(EMSCRIPTEN) || defined(EMTERPRETER_SYNC)
+
 /* Please leave the Splash screen stuff in working order in DOSBox. We spend a lot of time making DOSBox. */
 	SDL_Surface* splash_surf = NULL;
 #ifdef EMSCRIPTEN
@@ -2080,8 +2080,8 @@ static void GUI_StartUp(Section * sec) {
 				}
 			}
 			if (exit_splash) break;
-#if defined(EMSCRIPTEN) && defined(EMTERPRETER_SYNC)
-			emscripten_sleep_with_yield(1);
+#if defined(EMSCRIPTEN) // && defined(EMTERPRETER_SYNC)
+			emscripten_sleep(1);
 #endif
 
 			if (ct<1) {
@@ -2136,7 +2136,7 @@ static void GUI_StartUp(Section * sec) {
 		delete [] tmpbufp;
 
 	}
-#endif // !defined(EMSCRIPTEN) || defined(EMTERPRETER_SYNC)
+
 	/* Get some Event handlers */
 	MAPPER_AddHandler(KillSwitch,MK_f9,MMOD1,"shutdown","ShutDown");
 	MAPPER_AddHandler(CaptureMouse,MK_f10,MMOD1,"capmouse","Cap Mouse");
@@ -2533,7 +2533,7 @@ void Config_Add_SDL() {
 
 	Pbool = sdl_sec->Add_bool("fullscreen",Property::Changeable::Always,false);
 	Pbool->Set_help("Start dosbox directly in fullscreen. (Press ALT-Enter to go back)");
-     
+
 	Pbool = sdl_sec->Add_bool("vsync",Property::Changeable::Always,false);
 	Pbool->Set_help("Sync to Vblank IF supported by the output device and renderer (if relevant).\n"
 	                "It can reduce screen flickering, but it can also result in a slow DOSBox.");

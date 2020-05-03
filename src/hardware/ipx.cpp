@@ -41,7 +41,7 @@
 #include "programs.h"
 #include "pic.h"
 
-#if defined(EMSCRIPTEN) && defined(EMTERPRETER_SYNC)
+#if defined(EMSCRIPTEN)
 #include <emscripten.h>
 #endif
 
@@ -814,11 +814,13 @@ bool ConnectToServer(char const *strAddr) {
 
 						return false;
 					}
-#if defined(EMSCRIPTEN) && defined(EMTERPRETER_SYNC)
-					emscripten_sleep_with_yield(100);
+
+#if defined(EMSCRIPTEN)
+					emscripten_sleep(100);
 #else
 					CALLBACK_Idle();
 #endif
+
 					result = SDLNet_UDP_Recv(ipxClientSocket, &regPacket);
 					if (result != 0) {
 						memcpy(localIpxAddr.netnode, regHeader.dest.addr.byNode.node, sizeof(localIpxAddr.netnode));
@@ -1055,8 +1057,8 @@ public:
 				pingSend();
 				ticks = GetTicks();
 				while((GetTicks() - ticks) < 1500) {
-#if defined(EMSCRIPTEN) && defined(EMTERPRETER_SYNC)
-					emscripten_sleep_with_yield(100);
+#if defined(EMSCRIPTEN)
+					emscripten_sleep(100);
 #else
 					CALLBACK_Idle();
 #endif
