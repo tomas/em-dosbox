@@ -391,6 +391,8 @@ static void handleIpxRequest(void) {
 			break;
 
 		case 0x0003:		// Send packet
+			LOG_IPX("IPX: Send packet");
+
 			tmpECB = new ECBClass(SegValue(es),reg_si);
 			if(!incomingPacket.connected) {
 				tmpECB->setInUseFlag(USEFLAG_AVAILABLE);
@@ -406,6 +408,8 @@ static void handleIpxRequest(void) {
 
 			break;
 		case 0x0004:  // Listen for packet
+			LOG_IPX("IPX: Listen for packet");
+
 			tmpECB = new ECBClass(SegValue(es),reg_si);
 			// LOG_IPX("ECB: SN%7d RECEIVE.", tmpECB->SerialNumber);
 			if(!sockInUse(tmpECB->getSocket())) {  // Socket is not open
@@ -587,6 +591,7 @@ static void receivePacket(Bit8u *buffer, Bit16s bufSize) {
 			// Yes.  We should return the ping back to the sender
 			IPaddress tmpAddr;
 			UnpackIP(tmpHeader->src.addr.byIP, &tmpAddr);
+			LOG_MSG("pingAck!\n");
 			pingAck(tmpAddr);
 			return;
 		}
@@ -791,10 +796,11 @@ bool ConnectToServer(char const *strAddr) {
 			regPacket.len = sizeof(regHeader);
 			regPacket.maxlen = sizeof(regHeader);
 			regPacket.channel = UDPChannel;
+			LOG_MSG("Sending UDP packet\n");
 			// Send registration string to server.  If server doesn't get
 			// this, client will not be registered
 			numsent = SDLNet_UDP_Send(ipxClientSocket, regPacket.channel, &regPacket);
-			
+			LOG_MSG("Sent UDP packet\n");
 			if(!numsent) {
 				LOG_MSG("IPX: Unable to connect to server: %s", SDLNet_GetError());
 				SDLNet_UDP_Close(ipxClientSocket);
@@ -984,6 +990,11 @@ public:
 				return;
 			}
 			if(strcasecmp("connect", temp_line.c_str()) == 0) {
+
+#ifdef EMSCRIPTEN
+				emscripten_sleep(100);
+#endif
+
 				char strHost[1024];
 				if(incomingPacket.connected) {
 					WriteOut("IPX Tunneling Client already connected.\n");
@@ -993,6 +1004,7 @@ public:
 					WriteOut("IPX Server address not specified.\n");
 					return;
 				}
+				WriteOut("Connecting to server...\n");
 				strcpy(strHost, temp_line.c_str());
 
 				if(!cmd->FindCommand(3, temp_line)) {
