@@ -2634,7 +2634,7 @@ void MAPPER_RunInternal() {
 #endif
 		}
 		BIND_MappingEvents();
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN) && (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
 		emscripten_sleep(1);
 #else
 		SDL_Delay(1);

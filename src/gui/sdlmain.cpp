@@ -427,7 +427,7 @@ static Bitu Pause_Loop(void) {
 			}
 		}
 	}
-#ifdef EMTERPRETER_SYNC
+#if defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY)
 	emscripten_sleep(10);
 #endif
 	return 0;
@@ -2029,6 +2029,8 @@ static void GUI_StartUp(Section * sec) {
  */
 
 /* Please leave the Splash screen stuff in working order in DOSBox. We spend a lot of time making DOSBox. */
+#if defined(EMSCRIPTEN) && (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
+
 	SDL_Surface* splash_surf = NULL;
 #ifdef EMSCRIPTEN
 	if (output != "texture" && output != "texturenb")
@@ -2080,7 +2082,7 @@ static void GUI_StartUp(Section * sec) {
 				}
 			}
 			if (exit_splash) break;
-#if defined(EMSCRIPTEN) // && defined(EMTERPRETER_SYNC)
+#if defined(EMSCRIPTEN) && (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
 			emscripten_sleep(1);
 #endif
 
@@ -2136,6 +2138,7 @@ static void GUI_StartUp(Section * sec) {
 		delete [] tmpbufp;
 
 	}
+#endif // #if defined(EMSCRIPTEN) && (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
 
 	/* Get some Event handlers */
 	MAPPER_AddHandler(KillSwitch,MK_f9,MMOD1,"shutdown","ShutDown");

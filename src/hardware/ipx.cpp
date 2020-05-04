@@ -821,7 +821,7 @@ bool ConnectToServer(char const *strAddr) {
 						return false;
 					}
 
-#if defined(EMSCRIPTEN)
+#if defined(EMSCRIPTEN) && (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
 					emscripten_sleep(100);
 #else
 					CALLBACK_Idle();
@@ -991,7 +991,7 @@ public:
 			}
 			if(strcasecmp("connect", temp_line.c_str()) == 0) {
 
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN) && (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
 				emscripten_sleep(100);
 #endif
 
@@ -1069,7 +1069,7 @@ public:
 				pingSend();
 				ticks = GetTicks();
 				while((GetTicks() - ticks) < 1500) {
-#if defined(EMSCRIPTEN)
+#if defined(EMSCRIPTEN) && (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
 					emscripten_sleep(100);
 #else
 					CALLBACK_Idle();
