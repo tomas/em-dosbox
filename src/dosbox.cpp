@@ -142,7 +142,7 @@ int nosleep_lock = 0;
 
 static Bitu Normal_Loop(void) {
 	Bits ret;
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN)
 	int ticksEntry = GetTicks();
 	/* Normal DOSBox is free to use up all available host CPU time, but
 	 * in a browser, sleep has to happen regularly so the screen is updated,
@@ -153,7 +153,9 @@ static Bitu Normal_Loop(void) {
 	if (SDL_TICKS_PASSED(ticksEntry, last_sleep + 10)) {
 		if (nosleep_lock == 0) {
 			last_sleep = ticksEntry;
+#if (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
 			emscripten_sleep(1);
+#endif
 			ticksEntry = GetTicks();
 		} else if (SDL_TICKS_PASSED(ticksEntry, last_sleep + 2000) &&
 		           !SDL_TICKS_PASSED(ticksEntry, last_loop + 200)) {
@@ -234,7 +236,7 @@ increaseticks:
 		if (ticksNew > ticksLast) {
 			ticksRemain = ticksNew-ticksLast;
 			ticksLast = ticksNew;
-#ifdef EMSCRIPTEN
+#if defined(EMSCRIPTEN) && (defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY))
 			/* Calculations below are meant to be based on the number of ticks
 			 * used by DOSBox. Ticks between two main loop calls include time
 			 * when DOSBox isn't running, so only time from the start of this
@@ -354,7 +356,7 @@ increaseticks:
 			ticksAdded = 0;
 #ifndef EMSCRIPTEN
 			SDL_Delay(1);
-#else // if defined(EMTERPRETER_SYNC)
+#elif defined(EMTERPRETER_SYNC) || defined(EMSCRIPTEN_ASYNCIFY)
 			if (nosleep_lock == 0) {
 				last_sleep = ticksNew;
 				emscripten_sleep(1);
