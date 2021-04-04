@@ -1,18 +1,4 @@
-## BUILDING
-
-### Emterpreter Sync, non-wasm version. requires fastcomp backend (emsdk activate latest-fastcomp)
-
-    emconfigure ./configure
-
-### WASM version (needs --disable-sync, works with latest-fastcomp or latest/llvm)
-
-    emconfigure ./configure --enable-wasm --disable-sync
-
-### With IPX support:
-
-    emconfigure ./configure --with-sdl2-net=yes --enable-wget
-
----
+# This is a fork of https://github.com/dreamlayers/em-dosbox
 
 DOSBox ported to Emscripten
 ===========================
